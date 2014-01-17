@@ -4,4 +4,5 @@
 
 # Home page
 POST	 /resources                   controllers.Application.provision
+PUT	 /resources/:id               controllers.Application.changePlan(id: String)
 DELETE /resources/:id               controllers.Application.deprovision(id: String)
