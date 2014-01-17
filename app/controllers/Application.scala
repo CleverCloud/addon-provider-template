@@ -42,4 +42,21 @@ object Application extends Controller with utils.BasicAuth with models.Provision
 					Ok
 			}).getOrElse(BadRequest(Json.toJson(ProvisionResponse("error","This addon does not exist"))))
 	}
+
+	def changePlan(id: String) = Authenticated(parse.json) { request =>
+		val planChangeData = request.body.asOpt[PlanChangeData]
+		planChangeData.map(pcd => {
+				val addonData = persistence.findByAppId(pcd.heroku_id)
+				addonData.map(ad => {
+					val planChanged = for {
+						drivered <- driver.changePlan(ad, pcd.plan).right
+						changed <- persistence.changePlan(drivered.id,pcd.plan).right
+					} yield changed
+					if(planChanged.isLeft)
+						InternalServerError(Json.toJson(ProvisionResponse("error", planChanged.left.get)))
+					else
+						Ok(Json.toJson(ProvisionResponse(planChanged.right.get.id,"Plan changed",planChanged.right.get.config)))
+				}).getOrElse(NotFound(Json.toJson(ProvisionResponse("error","This addon does not exist"))))
+			}).getOrElse(BadRequest(Json.toJson(ProvisionResponse("error","Bad data sent"))))
+	}
 }

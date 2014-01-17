@@ -15,6 +15,11 @@ case class ProvisionResponse(
 	config: Map[String,String] = Map.empty
 )
 
+case class PlanChangeData(
+	heroku_id: String,
+	plan: String
+)
+
 case class AddonData(
 	id: String,
 	appId: String,
@@ -25,3 +30,14 @@ case class AddonData(
 	config: Map[String,String]
 )
 
+
+object JsonFormats {
+	import play.api.libs.json._
+	import play.api.libs.functional.syntax._
+	import play.api.data.validation.ValidationError
+
+	implicit val provisionDataFormat = Json.format[ProvisionData]
+	implicit val addonDataFormat = Json.format[AddonData]
+	implicit val provisionResponseFormat = Json.format[ProvisionResponse]
+	implicit val planChangeFormat = Json.format[PlanChangeData]
+}

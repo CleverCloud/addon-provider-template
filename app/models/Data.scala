@@ -41,6 +41,18 @@ trait ProvisionPersistence extends PersistenceModule {
 			Right(p)
 		}}
 
+		private def getConfig(id: String): Map[String,String] = DB.withConnection { implicit c =>
+			SQL(
+				"""
+					SELECT key,value
+					FROM provision_config
+					WHERE provision_id = {id}
+				"""
+			).on("id" -> id).as(str("key")~str("value")*).map {
+				case key~value => key -> value
+			}.toMap
+		}
+
 		def get(id: String): Option[AddonData] = DB.withConnection { implicit c =>
 			val row: Option[String~String~String~String~String~String] = SQL("SELECT * FROM provision WHERE provision.id = '{id}'")
 				.on("id" -> id)
@@ -53,16 +65,7 @@ trait ProvisionPersistence extends PersistenceModule {
 					str("logplex_token")*
 				).headOption
 
-			val config: Map[String,String] = SQL(
-				"""
-					SELECT key,value
-					FROM provision_config
-					WHERE provision_id = {id}
-				"""
-			).on("id" -> id).as(str("key")~str("value")*).map {
-				case key~value => key -> value
-			}.toMap
-
+			val config: Map[String,String] = getConfig(id)
 			row.map {
 				case id~appId~plan~region~callbackUrl~lptoken => AddonData(id,appId,plan,region,callbackUrl,lptoken,config)
 			}
@@ -90,15 +93,27 @@ trait ProvisionPersistence extends PersistenceModule {
 			}).getOrElse(Left("The Addon does not exist"))
 		}
 
+		def findByAppId(appId: String): Option[AddonData] =
+			DB.withConnection { implicit c =>
+				val row = SQL("SELECT * FROM provision WHERE app_id = '{appId}'")
+					.on("appId" -> appId)
+					.as(
+						str("id") ~
+						str("app_id") ~
+						str("plan") ~
+						str("region") ~
+						str("callback_url") ~
+						str("logplex_token")*
+					).headOption
+				row.map {
+					case id~appId~plan~region~callbackUrl~lptoken => {
+						val config = getConfig(id)
+						AddonData(id,appId,plan,region,callbackUrl,lptoken,config)
+					}
+				}
+			}
+
 
 	}
 }
 
-object JsonFormats {
-	import play.api.libs.json._
-	import play.api.libs.functional.syntax._
-	import play.api.data.validation.ValidationError
-
-	implicit val provisionDataFormat = Json.format[ProvisionData]
-	implicit val provisionResponseFormat = Json.format[ProvisionResponse]
-}
