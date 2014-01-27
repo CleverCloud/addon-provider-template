@@ -1,0 +1,18 @@
+@(addon: AddonData)
+
+@main("My addon dashboard") {
+<section>
+	<h1>Welcome to your addon's dashboard</h1>
+	<p>Here is some informations about your addon:</p>
+	<dl>
+		<dt>Id</dt>
+		<dd>@addon.id</dd>
+		<dt>Plan</dt>
+		<dd>@addon.plan</dd>
+		@addon.config.map {kv =>
+			<dt>@kv._1</dt>
+			<dd>@kv._2</dd>
+		}
+	</dl>
+</section>
+}

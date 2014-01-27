@@ -30,6 +30,14 @@ case class AddonData(
 	config: Map[String,String]
 )
 
+case class SSOData(
+	id: String,
+	timestamp: Long,
+	token: String,
+	navData: String,
+	email: String
+)
+
 
 object JsonFormats {
 	import play.api.libs.json._

@@ -54,7 +54,8 @@ trait ProvisionPersistence extends PersistenceModule {
 		}
 
 		def get(id: String): Option[AddonData] = DB.withConnection { implicit c =>
-			val row: Option[String~String~String~String~String~String] = SQL("SELECT * FROM provision WHERE provision.id = '{id}'")
+			println("Getting addon {"+id+"}")
+			val row: Option[String~String~String~String~String~String] = SQL("SELECT * FROM provision WHERE id = {id}")
 				.on("id" -> id)
 				.as(
 					str("id") ~
@@ -64,6 +65,7 @@ trait ProvisionPersistence extends PersistenceModule {
 					str("callback_url") ~
 					str("logplex_token")*
 				).headOption
+			println("got row " + row.toString)
 
 			val config: Map[String,String] = getConfig(id)
 			row.map {
@@ -73,7 +75,7 @@ trait ProvisionPersistence extends PersistenceModule {
 
 		def delete(id: String): Either[String,AddonData] = DB.withConnection { implicit c =>
 			get(id).map(data => {
-				SQL("DELETE FROM provision WHERE id = '{id}'")
+				SQL("DELETE FROM provision WHERE id = {id}")
 					.on("id" -> id)
 					.executeUpdate
 				Right(data)
@@ -85,7 +87,7 @@ trait ProvisionPersistence extends PersistenceModule {
 				if(data.plan == plan)
 					Left("I won't change the plan to set the same one")
 				else {
-					SQL("UPDATE provision SET plan = '{plan}' WHERE id = '{id}'")
+					SQL("UPDATE provision SET plan = '{plan}' WHERE id = {id}")
 						.on("plan" -> plan, "id" -> id)
 						.executeUpdate
 					Right(data)
@@ -95,7 +97,7 @@ trait ProvisionPersistence extends PersistenceModule {
 
 		def findByAppId(appId: String): Option[AddonData] =
 			DB.withConnection { implicit c =>
-				val row = SQL("SELECT * FROM provision WHERE app_id = '{appId}'")
+				val row = SQL("SELECT * FROM provision WHERE app_id = {appId}")
 					.on("appId" -> appId)
 					.as(
 						str("id") ~
