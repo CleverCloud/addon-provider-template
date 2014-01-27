@@ -3,3 +3,14 @@ Addon API template/example for Clever Cloud addon providers
 
 This project is a template for Addon API written in scala with Play!
 Framework 2.
+
+This project can look a little complex because of the extra traits,
+but it's meant to be re-usable.  So you will find traits to implement
+in the utils package.
+
+You should not have to modify the Application.scala class apart from
+making it extend your Persistence and ProvisionDriver implementations.
+
+The entities.scala file contains the basic case class you will need to
+work as an addon. Please read the comments of the class to get more
+informations.
