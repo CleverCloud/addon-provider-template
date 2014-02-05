@@ -1,0 +1,35 @@
+{
+	"id": "my_addon", // The name of your addon. without spaces or fancy stuff. "mailjet" is a fine id.
+	"api": {
+		// Below are the environment variable we will inject in
+		// applications. By convention, they must all start by the `id` value uppercased.
+		"config_vars": [ "MY_ADDON_URL","MY_ADDON_LOGIN","MY_ADDON_PASSWORD" ],
+		// It is used to provide the ability to provision the addon the
+		// closest possible to the running application. For now, we only
+		// support "eu".
+		"regions": [ "eu" ],
+		// Used by our API to authentify with your API. You must check for
+		// Basic auth with
+		// 	user being the addon id (e.g. "my_addon")
+		// 	password being this field
+		"password": "10105417630e4c4ccc5647793d7dccd08fd2774a",
+		// Used to salt the sso token. To access their dashboard, the user
+		// do not have to create a mailjet account. Instead, we will POST
+		// data to authenticate the user. Documentation for that is :
+		// https://devcenter.heroku.com/articles/add-on-single-sign-on
+		"sso_salt": "df98014d1d3eebd2929fcac574de289defe23a30",
+		// That's used in production by our API. It will be also used for
+		// tests on our platform.
+		"production": {
+			// We POST/PUT/DELETE here to (de)provision an addon.
+			"base_url": "https://my-dummy-addon.cleverapps.io/resources",
+			// We POST here to start the single-sign-on procedure.
+			"sso_url": "https://my-dummy-addon.cleverapps.io/sso"
+		}
+		// That's used by you with the kensa tool
+		,"test": {
+			"base_url": "http://localhost:8080/resources",
+			"sso_url": "http://localhost:8080/sso"
+		}
+	}
+}
