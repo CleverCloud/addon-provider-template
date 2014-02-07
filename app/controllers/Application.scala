@@ -44,7 +44,7 @@ object Application extends Controller with utils.BasicAuth with models.Provision
 		}).getOrElse(BadRequest)
 	}
 
-	def deprovision(id: String) = Authenticated(parse.json) { request =>
+	def deprovision(id: String) = Authenticated { request =>
 		persistence.get(id).map(deprovData => {
 				val addonData = for {
 					deprovisioned <- driver.deprovision(deprovData).right
