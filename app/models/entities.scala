@@ -38,6 +38,18 @@ case class PlanChangeData(
 	plan: String // new plan name.
 )
 
+case class AddonConfig(
+	host: String,
+	user: String,
+	password: String
+) {            
+   def toMap: Map[String, String] = Map(
+      "MY_ADDON_URL" -> this.host,
+      "MY_ADDON_LOGIN" -> this.user,
+      "MY_ADDON_PASSWORD" -> this.password
+   )
+}
+
 /**
  * This is an internal representation of an addon.
  * It's kind of a mix between ProvisionData and ProvisionRespons
@@ -49,7 +61,7 @@ case class AddonData(
   	region: String, // Region (so, for now, EU).
 	callback_url: String, // URL to request user's data to the Clever Cloud's API
 	logplex_token: String, // Token you need to send logs to our logging system.
-	config: Map[String,String] // These are only here to add parameters to creation. No need to store'em
+	config: AddonConfig // Config that will be stored as environment variables.
 )
 
 /**
@@ -69,6 +81,7 @@ object JsonFormats {
 	import play.api.libs.functional.syntax._
 	import play.api.data.validation.ValidationError
 
+	implicit val addonConfigFormat = Json.format[AddonConfig]
 	implicit val provisionDataFormat = Json.format[ProvisionData]
 	implicit val provisionResponseFormat = Json.format[ProvisionResponse]
 	implicit val planChangeFormat = Json.format[PlanChangeData]

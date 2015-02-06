@@ -9,7 +9,7 @@
 		<dd>@addon.id</dd>
 		<dt>Plan</dt>
 		<dd>@addon.plan</dd>
-		@addon.config.map {kv =>
+		@addon.config.toMap.map {kv =>
 			<dt>@kv._1</dt>
 			<dd>@kv._2</dd>
 		}

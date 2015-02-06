@@ -13,10 +13,7 @@ trait MyProvisionDriver extends ProvisionDriverModule {
 				pd.region,
 				pd.callback_url,
 				pd.logplex_token,
-				Map(
-					"MY_ADDON_USER" -> RandomStringUtils.randomAlphanumeric(10),
-				  	"MY_ADDON_PASSWORD" -> RandomStringUtils.randomAlphanumeric(20)
-				)
+				AddonConfig("myhost.com",RandomStringUtils.randomAlphanumeric(10),RandomStringUtils.randomAlphanumeric(20))
 			)
 		)
 		def deprovision(ad: AddonData): Either[String,AddonData] = Left("Not implemented yet")
